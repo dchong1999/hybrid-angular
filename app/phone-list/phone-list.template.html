@@ -6,6 +6,13 @@
       <p>
         Search:
         <input ng-model="$ctrl.query" />
+        <!-- Data binding
+             When the page loads, AngularJS binds the input box value to the data model variable 
+             specified with ngModel and keeps the two in sync
+             The data typed into the input (bound to $ctrl.query) is immediately available
+             as a filter input later in '|filter:$ctrl.query'
+             ngModel directive lets a user enter a search criteria and immediately see
+             the effects of their search -->
       </p>
 
       <p>

@@ -1,5 +1,9 @@
 <!doctype html>
 <html lang="en" ng-app="phonecatApp">
+    <!-- ng-app attribute represents ngApp directive which identifies the html element that acts as the root of the app
+       can tell AngularJS if the entire html page or only a portion should be treated as an AngularJS app
+       specified that our module to load when bootstrapping is named phonecatApp - it will contain any necessary controllers
+       -->
   <head>
     <meta charset="utf-8">
     <title>Google Phone Gallery</title>
@@ -9,11 +13,16 @@
 
     <script src="lib/jquery/dist/jquery.js"></script>
     <script src="lib/angular/angular.js"></script>
+        <!-- angular.js has a callback that executes when the html page is fully downloaded
+         it will cause AngularJS to look for the ngApp directive
+         it bootstraps the app with the root element where ngApp was defined -->
     <script src="lib/angular-animate/angular-animate.js"></script>
     <script src="lib/angular-resource/angular-resource.js"></script>
     <script src="lib/angular-route/angular-route.js"></script>
+          <!-- define angularjs ngRoute module which provides routing -->
     <script src="app.module.js"></script>
     <script src="app.config.js"></script>
+          <!-- configures providers available to the main module -->
     <script src="app.animations.js"></script>
     <script src="core/core.module.js"></script>
     <script src="core/checkmark/checkmark.filter.js"></script>
@@ -32,3 +41,283 @@
 
   </body>
 </html>
+<!-- Notes
+     AngularJS' built-in services, scope methods, and some AngularJS APIs have a $ prefix
+-->
+<!-- bootstrapping
+     injector for dependency injection created
+          Creates the root scope that becomes the context for the app model
+          Loads the module definitions specified in the application
+          Registers all providers defined in the modules
+          Lazy loads services and dependencies (via their providers) as parameters to injectable functions (if asked to)
+     Providers are objects that create instances of services and expose configuration APIs that can be used to control the creation/runtime behavior of a service
+          - $route service has $routeProvider that exposes APIs that let you define routes for your application
+          - Providers can only be injected into config functions
+     AngularJS compiles the DOM starting from the root element, processing any directives it finds along the way
+     app waits for browser events (clicks, key presses, http requests) that might change the model
+     detects if model changes occur and updates all affected bindings continuously
+     the view is a projection of the model through the html template
+      -->
+<!-- controllers
+     ngController directory attaches a controller to an html element
+     the controller is in charge of the dom subtree under the element
+     the controller provides context for our data model, connecting the model and the view
+     the controller is a constructor function that takes a $scope parameter
+     model data can be attached to the $scope
+     $scope is a descendant of the root scope that was created when the app was defined
+     the controller scope is available to all bindings in the element that the controller is bound to
+
+     1. app/index.html:
+     <html ng-app="phonecatApp">
+          <head>
+               ...
+               <script src="lib/angular/angular.js"></script>
+               <script src="app.js"></script>
+          </head>
+          <body ng-controller="PhoneListController">
+               <ul>
+                    <li ng-repeat="phone in phones">
+                         <span>{{phone.name}}</span>
+                         <p>{{phone.snippet}}</p>
+                    </li>
+               </ul>
+          </body>
+     </html>
+
+     2. app/app.js:
+     var phonecatApp = angular.module('phonecatApp', []);
+     phonecatApp.controller('PhoneListController', function PhoneListController($scope) {
+          $scope.phones = [
+               {
+                    name: 'Nexus S',
+                    snippet: 'Fast just got faster with Nexus S.'
+               }, {
+                    name: 'Motorola XOOM™ with Wi-Fi',
+                    snippet: 'The Next, Next Generation tablet.'
+               }, {
+                    name: 'MOTOROLA XOOM™',
+                    snippet: 'The Next, Next Generation tablet.'
+               }
+          ];
+     });
+     
+     Testing Independent Controllers
+     - i.e. registered controller via a constructor function on phonecatApp module
+     - use AngularJS service, $controller, to retrieve a controller by name and inject a map of dependencies
+     - only instantiates controllers registered by name using .controller() method
+     - the following test instantiates the controller with a mock scope object
+     - to run tests use 'npm test'
+
+     3. app/app.spec.js:
+     describe('PhoneListController', function() {
+          beforeEach(module('phonecatApp')); //before each test have angularJS load the module
+          it('should create a `phones` model with 3 phones', inject(function($controller) { //ask AngularJS to inject the $controller service into our test function
+               var scope = {};
+               var ctrl = $controller('PhoneListController', {$scope: scope}); //use $controller to create an instance of the PhoneListController
+               expect(scope.phones.length).toBe(3);
+          }));
+     }); -->
+<!-- scope
+     Scope is the glue that allows the template, model, and controller to work together
+     AngularJS uses scopes, templates, data models, and controllers to keep models and views separate but in sync
+     changes made to the model are reflected in the view and vice versa 
+     Has some properties beginning with $$ - these are private and should not and cannot be accessed/modified-->
+<!-- components
+     packaged pieces of logic that are isolated into reusable entities
+     AngularJS creates an isolate scope for each instance of our component
+     components are like a simpler version of directives
+     components and directives are named in camelCase, but in hyphen case when called in the html
+     to create a component use the .component() method of an AngularJS module and provide the CDO
+     CDO: component definition object
+      - contains a template and controller
+      - if you omit the controller AngularJS will create a dummy one
+     to reference controller in html use $ctrl (as opposed to $scope)
+     
+     1. app/index.html:
+     <html ng-app="phonecatApp">
+          <head>
+               ...
+               <script src="lib/angular/angular.js"></script>
+               <script src="app.js"></script>
+               <script src="phone-list.component.js"></script>
+          </head>
+          <body>
+               <phone-list></phone-list>
+          </body>
+     </html>
+
+     2. app/app.js:
+     angular.module('phonecatApp', []);
+
+     3. app/phone-list.component.js:
+     angular.module('phonecatApp').
+          component('phoneList', {  // This name is what AngularJS uses to match to the `<phone-list>` element.
+          template:
+               '<ul>' +
+                    '<li ng-repeat="phone in $ctrl.phones">' +
+                    '<span>{{phone.name}}</span>' +
+                    '<p>{{phone.snippet}}</p>' +
+                    '</li>' +
+               '</ul>',
+          controller: function PhoneListController() {
+               this.phones = [
+                    {
+                         name: 'Nexus S',
+                         snippet: 'Fast just got faster with Nexus S.'
+                    }, {
+                         name: 'Motorola XOOM™ with Wi-Fi',
+                         snippet: 'The Next, Next Generation tablet.'
+                    }, {
+                         name: 'MOTOROLA XOOM™',
+                         snippet: 'The Next, Next Generation tablet.'
+                    }
+               ];
+          }
+     });
+
+     Testing Component Controllers
+     - Unit test the controller separately, since it contains the application logic and data
+     - To instantiate the controller, use the AngularJS service $componentController
+
+     4. app/phone-list.component.spec.js:
+     describe('phoneList', function() {
+          // Load the module that contains the `phoneList` component before each test
+          beforeEach(module('phonecatApp'));
+          // Test the controller
+          describe('PhoneListController', function() {
+               it('should create a `phones` model with 3 phones', inject(function($componentController) {
+                    var ctrl = $componentController('phoneList');
+                    expect(ctrl.phones.length).toBe(3);
+               }));
+          });
+     });
+     -->
+<!-- Modules
+     Put each feature/entity in its own file
+     Group files into directories by feature
+     Each feature/section should declare its own module
+     All related entities should register on that module
+     The main module will declare a dependency on each feature/section module
+
+     app/phone-list/phone-list.module.js:
+     angular.module('phoneList', []);
+
+     app/phone-list/phone-list.component.js:
+     angular.
+          module('phoneList').
+          component('phoneList', {...});
+
+     app/app.module.js: (since app/app.js now only contains the main module declaration, we gave it a .module suffix)
+     angular.module('phonecatApp', [
+          'phoneList'
+     ]);
+
+     By passing phoneList inside the dependencies array when defining the phonecatApp module, AngularJS will make all entities registered on phoneList available on phonecatApp as well.
+     -->
+<!-- Testing
+     Unit tests are good for testing controllers and other JS code
+     Unit tests cannot easily test templates, DOM manipulation, or interoperability of 
+     components/services
+     Instead, utilize E2E tests
+     Uses Protractor APIs, use Protractor to run E2E tests (npm run protractor) - does not hot reload
+          Will need a running instance of your web application served via a web server (npm start in a different tab)
+
+     describe('PhoneCat Application', function() {
+          describe('phoneList', function() {
+               beforeEach(function() {
+                    browser.get('index.html');
+               });
+               it('should filter the phone list as a user types into the search box', function() {
+                    var phoneList = element.all(by.repeater('phone in $ctrl.phones'));
+                    var query = element(by.model('$ctrl.query'));
+
+                    expect(phoneList.count()).toBe(3);
+
+                    query.sendKeys('nexus');
+                    expect(phoneList.count()).toBe(1);
+
+                    query.clear();
+                    query.sendKeys('motorola');
+                    expect(phoneList.count()).toBe(2);
+               });
+          });
+     })
+      -->
+<!-- XHR & Dependency Injection
+     AngularJS's $http service can be used in a controller to make HTTP requests to our web server to fetch data in app/phones/phones.json
+     Services are managed by AngularJS's DI subsystem
+     Dependency Injection helps make your web app structured and loosely coupled
+          - separate entities
+          - dependencies between entities are resolved by the DI subsystem
+
+     app/phone-list/phone-list.component.js:
+     angular.module('phoneList').
+          component('phoneList', {
+               templateUrl: 'phone-list/phone-list.template.html',
+               controller: function PhoneListController($http) {
+                    var self = this;
+                    self.orderProp = 'age';
+                    $http.get('phones/phones.json').then(function(response) {
+                         self.phones = response.data;
+                    });
+               }
+     });
+
+     declare the dependencies you need as arguments to a controller's constructor function
+     AngularjS' dependency injector provides services to our controller and creates any transitive dependencies
+     $http makes get req to our web server for phones.json (url relative to index.html)
+     $http service returns a promise object
+     AngularJS detected the JSON response and parsed it into the response.data property passed to our callback
+     append a .then() method to handle the asynchronous response and assign the phone data to the controller as phones
+
+     Testing
+     AngularJS provides a mock $http service that we can use in unit tests
+     Can configure fake responses to server requests by calling methods on a service called $httpBackend
+
+     app/phone-list/phone-list.component.spec.js:
+     describe('phoneList', function() {
+          beforeEach(module('phoneList'));
+          describe('PhoneListController', function() {
+               var $httpBackend, ctrl;
+               beforeEach(inject(function($componentController, _$httpBackend_) {
+                    $httpBackend = _$httpBackend_;
+                    $httpBackend.expectGET('phones/phones.json')
+                              .respond([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+                    ctrl = $componentController('phoneList');
+               }));
+               it('should create a `phones` property with 2 phones fetched with `$http`', function() {
+                    jasmine.addCustomEqualityTester(angular.equals);
+                    expect(ctrl.phones).toEqual([]);
+                    $httpBackend.flush();
+                    expect(ctrl.phones).toEqual([{name: 'Nexus S'}, {name: 'Motorola DROID'}]);
+               });
+               it('should set a default value for the `orderProp` property', function() {
+                    expect(ctrl.orderProp).toBe('age');
+               });
+          });
+     });
+
+
+     beforeeach function uses inject() helper method to inject instances of $componentController and $httpBackend services so it can guarantee that each test is isolated
+     $httpBackend is a mock version of the $http service that lets us write tests without dealing with native APIs, global states, and asynchronous behavior
+     we use $httpBackend.expectGET() to tell the $httpBackend service to expect a request from the controller and tell it what to respond with
+     The injector ignores leading and trailing underscores here (i.e. _$httpBackend_).
+     This allows us to inject a service and assign it to a variable with the same name as the service while avoiding a name conflict.
+     responses are not returned until we call the $httpBackend.flush() method
+
+     create the ctrl controller for phoneList
+     We make sure that the ctrl.phones property is empty before calling the flush method and confirm that the variable is now popualted with the phone data
+-->
+<!-- Routing
+     Routing functionality comes from the ngRoute module, which is distributed separately from teh core AngularJS framework
+     Application routes are declared via $routeProvider, which is the provider of the $route service
+     This service lets us implement deep linking so we can utilize the browser's history and bookmarks
+
+     $route service is usually used with the ngView directive
+     ngView includes the view template for the current route into the layout template
+
+     add ngRoute module as dependency to app.module.js
+     to configure $route service via provider we create app.config.js
+
+     update Karma config file with angular-route
+ -->
