@@ -41,3 +41,7 @@ describe('Phone', function() {
   });
 
 });
+
+// $resource service augments the response object with extra methods and properties
+// if we used Jasmine's .toEqual() matcher, our tests would fail as the test values don't match the responses exactly
+// tell Jasmine to use angular.equals as our equality tester, which ignores functions and $ prefixed properties (AngularJS uses $ prefix for proprietary API)
