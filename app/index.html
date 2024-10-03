@@ -18,6 +18,7 @@
          it bootstraps the app with the root element where ngApp was defined -->
     <script src="lib/angular-animate/angular-animate.js"></script>
     <script src="lib/angular-resource/angular-resource.js"></script>
+          <!-- contains ngResource which is used to create RESTful client -->
     <script src="lib/angular-route/angular-route.js"></script>
           <!-- define angularjs ngRoute module which provides routing -->
     <script src="app.module.js"></script>
@@ -321,3 +322,14 @@
 
      update Karma config file with angular-route
  -->
+<!-- REST and Custom Services
+     define a custom service that represents a RESTful client
+     use this service to request
+
+     the ngResource module (separate from the core AngularJS framework) provides RESTful functionality
+     create our own phone service to provide access to phone data on the server - put the service in its own module under core
+
+     TESTING
+     will need to add angular-resource to the karma config files
+     add unit tests to verify the service issues HTTP requests and returns "future" objects/arrays
+  -->
