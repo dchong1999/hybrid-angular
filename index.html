@@ -1,46 +1,57 @@
 <!doctype html>
-<html lang="en" ng-app="phonecatApp">
-    <!-- ng-app attribute represents ngApp directive which identifies the html element that acts as the root of the app
+<html lang="en">
+<!-- ng-app attribute represents ngApp directive which identifies the html element that acts as the root of the app
        can tell AngularJS if the entire html page or only a portion should be treated as an AngularJS app
        specified that our module to load when bootstrapping is named phonecatApp - it will contain any necessary controllers
        -->
-  <head>
-    <meta charset="utf-8">
-    <title>Google Phone Gallery</title>
-    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="app.css" />
-    <link rel="stylesheet" href="app.animations.css" />
 
-    <script src="lib/jquery/dist/jquery.js"></script>
-    <script src="lib/angular/angular.js"></script>
-        <!-- angular.js has a callback that executes when the html page is fully downloaded
+<head>
+     <meta charset="utf-8">
+     <title>Google Phone Gallery</title>
+     <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.css" />
+     <link rel="stylesheet" href="app.css" />
+     <link rel="stylesheet" href="app.animations.css" />
+
+     <script src="lib/jquery/dist/jquery.js"></script>
+     <script src="lib/angular/angular.js"></script>
+     <!-- angular.js has a callback that executes when the html page is fully downloaded
          it will cause AngularJS to look for the ngApp directive
          it bootstraps the app with the root element where ngApp was defined -->
-    <script src="lib/angular-animate/angular-animate.js"></script>
-    <script src="lib/angular-resource/angular-resource.js"></script>
-          <!-- contains ngResource which is used to create RESTful client -->
-    <script src="lib/angular-route/angular-route.js"></script>
-          <!-- define angularjs ngRoute module which provides routing -->
-    <script src="app.module.js"></script>
-    <script src="app.config.js"></script>
-          <!-- configures providers available to the main module -->
-    <script src="app.animations.js"></script>
-    <script src="core/core.module.js"></script>
-    <script src="core/checkmark/checkmark.filter.js"></script>
-    <script src="core/phone/phone.module.js"></script>
-    <script src="core/phone/phone.service.js"></script>
-    <script src="phone-list/phone-list.module.js"></script>
-    <script src="phone-list/phone-list.component.js"></script>
-    <script src="phone-detail/phone-detail.module.js"></script>
-    <script src="phone-detail/phone-detail.component.js"></script>
-  </head>
-  <body>
+     <script src="lib/angular-animate/angular-animate.js"></script>
+     <script src="lib/angular-resource/angular-resource.js"></script>
+     <!-- contains ngResource which is used to create RESTful client -->
+     <script src="lib/angular-route/angular-route.js"></script>
+     <!-- define angularjs ngRoute module which provides routing -->
+     <script src="app.module.ajs.js"></script>
+     <script src="app.config.js"></script>
+     <!-- configures providers available to the main module -->
+     <script src="app.animations.js"></script>
+     <script src="core/core.module.js"></script>
+     <script src="core/checkmark/checkmark.filter.js"></script>
+     <script src="core/phone/phone.module.js"></script>
+     <script src="core/phone/phone.service.js"></script>
+     <script src="phone-list/phone-list.module.js"></script>
+     <script src="phone-list/phone-list.component.js"></script>
+     <script src="phone-detail/phone-detail.module.js"></script>
+     <script src="phone-detail/phone-detail.component.js"></script>
+     <base href="/app/">
+     <script src="/node_modules/core-js/client/shim.min.js"></script>
+     <script src="/node_modules/zone.js/bundles/zone.umd.js"></script>
+     <script src="/node_modules/systemjs/dist/system.src.js"></script>
+     <script src="/systemjs.config.js"></script>
+     <script>
+          System.import('/app');
+     </script>
+</head>
 
-    <div class="view-container">
-      <div ng-view class="view-frame"></div>
-    </div>
+<body>
 
-  </body>
+     <div class="view-container">
+          <div ng-view class="view-frame"></div>
+     </div>
+
+</body>
+
 </html>
 <!-- Notes
      AngularJS' built-in services, scope methods, and some AngularJS APIs have a $ prefix

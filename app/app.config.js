@@ -1,16 +1,16 @@
 'use strict';
-
 angular.
-  module('phonecatApp').
-  config(['$routeProvider',
-    function config($routeProvider) { //inject necessary providers into config function
-      $routeProvider. //use provider's methods to specify the behavior we wnat for the corresponding service
-        when('/phones', {
-          template: '<phone-list></phone-list>'
+    module('phonecatApp').
+    config(['$routeProvider',
+    function config($routeProvider) {
+        $routeProvider. //use provider's methods to specify the behavior we wnat for the corresponding service
+            when('/phones', {
+            template: '<phone-list></phone-list>'
         }).
-        when('/phones/:phoneId', { //all variables with the : prefix are extracted into the $routeParams object
-          template: '<phone-detail></phone-detail>'
+            when('/phones/:phoneId', {
+            template: '<phone-detail></phone-detail>'
         }).
-        otherwise('/phones');
+            otherwise('/phones');
     }
-  ]);
+]);
+//# sourceMappingURL=app.config.js.map
